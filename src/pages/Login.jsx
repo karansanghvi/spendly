@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       alert("❌ User not found or incorrect credentials.");
       console.log("User not found", error);

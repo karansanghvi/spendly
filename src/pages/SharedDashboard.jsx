@@ -7,6 +7,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   BarChart, Bar,
 } from "recharts";
+import ExpensesTableWithPagination from "../components/ExpensesTableWithPagination";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFE', '#FF6B6B'];
 
@@ -192,49 +193,28 @@ function SharedDashboard() {
       </div>
 
       {/* Modal for All Expenses */}
-      {showModal && (
-        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-11/12 md:w-3/4 max-h-[80vh] overflow-y-auto shadow-lg p-6 relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-lg"
-            >
-              ×
-            </button>
-            <h2 className="text-2xl font-semibold mb-4">All Expenses</h2>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-blue-500">
-                <tr>
-                  <th className="px-4 py-2 text-left text-white">Title</th>
-                  <th className="px-4 py-2 text-left text-white">Amount</th>
-                  <th className="px-4 py-2 text-left text-white">Currency</th>
-                  <th className="px-4 py-2 text-left text-white">Category</th>
-                  <th className="px-4 py-2 text-left text-white">Date</th>
-                  <th className="px-4 py-2 text-left text-white">Notes</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 text-gray-800">
-                {expenses.map(exp => (
-                  <tr key={exp.id} className="hover:bg-gray-100">
-                    <td className="px-4 py-2">{exp.title}</td>
-                    <td className="px-4 py-2">{exp.amount}</td>
-                    <td className="px-4 py-2">{exp.currency}</td>
-                    <td className="px-4 py-2">{exp.category}</td>
-                    <td className="px-4 py-2">{new Date(exp.date).toLocaleDateString()}</td>
-                    <td className="px-4 py-2">{exp.notes || "-"}</td>
-                  </tr>
-                ))}
-                {expenses.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="text-center py-4 text-gray-500">No expenses found.</td>
-                  </tr>
+        {showModal && (
+            <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-white rounded-2xl w-11/12 md:w-3/4 max-h-[80vh] overflow-hidden shadow-lg p-6 relative">
+                <button
+                    onClick={() => setShowModal(false)}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-lg"
+                >
+                    ×
+                </button>
+                <h2 className="text-2xl font-semibold mb-4">All Expenses</h2>
+
+                {/* Pagination Logic */}
+                {expenses.length > 0 && (
+                    <ExpensesTableWithPagination expenses={expenses} itemsPerPage={10} />
                 )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-      
+                {expenses.length === 0 && (
+                    <p className="text-center text-gray-500 py-4">No expenses found.</p>
+                )}
+                </div>
+            </div>
+        )}
+
     </div>
   );
 }
