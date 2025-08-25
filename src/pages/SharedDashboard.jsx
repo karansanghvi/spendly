@@ -14,6 +14,8 @@ function SharedDashboard() {
   const { token } = useParams();
   const [ownerName, setOwnerName] = useState("");
   const [expenses, setExpenses] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
   const [totalINR, setTotalINR] = useState(0);
   const [totalUSD, setTotalUSD] = useState(0);
   const [numTransactions, setNumTransactions] = useState(0);
@@ -21,54 +23,47 @@ function SharedDashboard() {
   const [lowestCategory, setLowestCategory] = useState('');
 
   useEffect(() => {
-  const fetchSharedData = async () => {
-    // Get ownerId from token
-    const q = query(collection(db, "sharedDashboards"), where("token", "==", token));
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      const owner = snapshot.docs[0].data().ownerId;
+    const fetchSharedData = async () => {
+      const q = query(collection(db, "sharedDashboards"), where("token", "==", token));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const owner = snapshot.docs[0].data().ownerId;
 
-      // Fetch owner full name
-      const userDoc = await getDoc(doc(db, "users", owner));
-      if (userDoc.exists()) setOwnerName(userDoc.data().fullName);
+        const userDoc = await getDoc(doc(db, "users", owner));
+        if (userDoc.exists()) setOwnerName(userDoc.data().fullName);
 
-      // Fetch expenses of owner
-      const expensesSnapshot = await getDocs(
-        query(collection(db, "expenses"), where("userId", "==", owner))
-      );
-      const expenseData = expensesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setExpenses(expenseData);
+        const expensesSnapshot = await getDocs(query(collection(db, "expenses"), where("userId", "==", owner)));
+        const expenseData = expensesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setExpenses(expenseData);
 
-      // Compute totals and category stats
-      let inr = 0, usd = 0, categoryTotals = {};
-      expenseData.forEach(exp => {
-        const amt = parseFloat(exp.amount) || 0;
-        if (exp.currency === "₹") inr += amt;
-        if (exp.currency === "$") usd += amt;
-        categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + amt;
-      });
+        // Compute totals
+        let inr = 0, usd = 0, categoryTotals = {};
+        expenseData.forEach(exp => {
+          const amt = parseFloat(exp.amount) || 0;
+          if (exp.currency === "₹") inr += amt;
+          if (exp.currency === "$") usd += amt;
+          categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + amt;
+        });
 
-      let maxCat = '', minCat = '', maxAmt = -Infinity, minAmt = Infinity;
-      for (const cat in categoryTotals) {
-        if (categoryTotals[cat] > maxAmt) { maxAmt = categoryTotals[cat]; maxCat = cat; }
-        if (categoryTotals[cat] < minAmt) { minAmt = categoryTotals[cat]; minCat = cat; }
+        let maxCat = '', minCat = '', maxAmt = -Infinity, minAmt = Infinity;
+        for (const cat in categoryTotals) {
+          if (categoryTotals[cat] > maxAmt) { maxAmt = categoryTotals[cat]; maxCat = cat; }
+          if (categoryTotals[cat] < minAmt) { minAmt = categoryTotals[cat]; minCat = cat; }
+        }
+
+        setTotalINR(inr);
+        setTotalUSD(usd);
+        setNumTransactions(expenseData.length);
+        setHighestCategory(maxCat || '-');
+        setLowestCategory(minCat || '-');
+      } else {
+        alert("Invalid or expired link.");
       }
+    };
 
-      setTotalINR(inr);
-      setTotalUSD(usd);
-      setNumTransactions(expenseData.length);
-      setHighestCategory(maxCat || '-');
-      setLowestCategory(minCat || '-');
+    fetchSharedData();
+  }, [token]);
 
-    } else {
-      alert("Invalid or expired link.");
-    }
-  };
-
-  fetchSharedData();
-}, [token]);
-
-  // Prepare chart data
   const pieData = Object.entries(expenses.reduce((acc, e) => {
     acc[e.category] = (acc[e.category] || 0) + parseFloat(e.amount || 0);
     return acc;
@@ -89,7 +84,18 @@ function SharedDashboard() {
 
   return (
     <div className="px-4 md:px-10 space-y-6 mb-20">
-      {ownerName && <h1 className="text-3xl font-bold text-black">{ownerName}'s Shared Dashboard</h1>}
+      {/* Header */}
+      {ownerName && (
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-black">{ownerName}'s Shared Dashboard</h1>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition font-semibold"
+          >
+            View All Expenses
+          </button>
+        </div>
+      )}
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -97,17 +103,14 @@ function SharedDashboard() {
           <h2 className="text-xl font-semibold mb-2">Total Expenses</h2>
           <p className="text-lg">$ {totalUSD.toFixed(2)} | ₹ {totalINR.toFixed(2)}</p>
         </div>
-
         <div className="bg-blue-500 text-white rounded-2xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-2">Number of Transactions</h2>
           <p className="text-lg">{numTransactions}</p>
         </div>
-
         <div className="bg-blue-500 text-white rounded-2xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-2">Highest Expense Category</h2>
           <p className="text-lg">{highestCategory}</p>
         </div>
-
         <div className="bg-blue-500 text-white rounded-2xl shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-2">Lowest Expense Category</h2>
           <p className="text-lg">{lowestCategory}</p>
@@ -187,6 +190,51 @@ function SharedDashboard() {
           </table>
         </div>
       </div>
+
+      {/* Modal for All Expenses */}
+      {showModal && (
+        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl w-11/12 md:w-3/4 max-h-[80vh] overflow-y-auto shadow-lg p-6 relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-lg"
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-semibold mb-4">All Expenses</h2>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-500">
+                <tr>
+                  <th className="px-4 py-2 text-left text-white">Title</th>
+                  <th className="px-4 py-2 text-left text-white">Amount</th>
+                  <th className="px-4 py-2 text-left text-white">Currency</th>
+                  <th className="px-4 py-2 text-left text-white">Category</th>
+                  <th className="px-4 py-2 text-left text-white">Date</th>
+                  <th className="px-4 py-2 text-left text-white">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 text-gray-800">
+                {expenses.map(exp => (
+                  <tr key={exp.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2">{exp.title}</td>
+                    <td className="px-4 py-2">{exp.amount}</td>
+                    <td className="px-4 py-2">{exp.currency}</td>
+                    <td className="px-4 py-2">{exp.category}</td>
+                    <td className="px-4 py-2">{new Date(exp.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{exp.notes || "-"}</td>
+                  </tr>
+                ))}
+                {expenses.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4 text-gray-500">No expenses found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 }
