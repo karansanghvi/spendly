@@ -25,7 +25,7 @@ function Signup() {
       });
 
       alert("Account created successfully!");
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       alert("❌ " + error.message);
       setFullName("");
