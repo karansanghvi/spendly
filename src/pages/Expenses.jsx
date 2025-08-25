@@ -212,7 +212,6 @@ function Expenses() {
   return (
     <>
       <div className='px-4 md:px-10 pt-20'>
-
         {/* Header */}
         <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-6 w-full'>
           <div className='flex flex-col'>

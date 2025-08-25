@@ -75,6 +75,9 @@ function Navbar() {
               <Link to="/expenses" className="text-xl font-semibold text-gray-800 hover:text-blue-500 transition">
                 Expenses
               </Link>
+              <Link to="/invite" className="text-xl font-semibold text-gray-800 hover:text-blue-500 transition">
+                Collaborate
+              </Link>
             </div>
 
             {/* User Dropdown */}
