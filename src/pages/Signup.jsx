@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
+import toast, { Toaster } from "react-hot-toast";
 
 function Signup() {
   const [fullName, setFullName] = useState("");
@@ -24,10 +25,11 @@ function Signup() {
         email,
       });
 
-      alert("Account created successfully!");
-      navigate("/");
+      toast.success("Account Created Successfully.")
+      navigate("/dashboard");
     } catch (error) {
-      alert("❌ " + error.message);
+      toast.error("Account already existed. Kindly log in.");
+      console.error("Error creating account: ", error);
       setFullName("");
       setPhone("");
       setEmail("");
@@ -60,13 +62,13 @@ function Signup() {
           <div className="input-box">
             <label htmlFor="emailAddress">Email Address:</label>
             <input type="email" id="emailAddress" placeholder="john.doe@gmail.com"
-              value={email} onChange={(e) => setEmail(e.target.value)} required />
+              value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
           </div>
 
           <div className="input-box">
             <label htmlFor="password">Password:</label>
             <input type="password" id="password" placeholder="Password"
-              value={password} onChange={(e) => setPassword(e.target.value)} required />
+              value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
           </div>
 
           <button type="submit" className="login-btn">Signup</button>
@@ -76,6 +78,14 @@ function Signup() {
       </div>
     </div>
     <br/> <br/>
+
+    <Toaster
+      position="top-right"
+      reverseOrder={false}
+      toastOptions={{
+        duration: 2000,
+      }}
+    />
     </>
   );
 }

@@ -194,7 +194,7 @@ function SharedDashboard() {
 
       {/* Modal for All Expenses */}
         {showModal && (
-            <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50">
                 <div className="bg-white rounded-2xl w-11/12 md:w-3/4 max-h-[80vh] overflow-hidden shadow-lg p-6 relative">
                 <button
                     onClick={() => setShowModal(false)}
@@ -214,7 +214,6 @@ function SharedDashboard() {
                 </div>
             </div>
         )}
-
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../assets/styles/profile.css";
 import { auth, db } from "../../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import toast, { Toaster } from "react-hot-toast";
 
 function Profile() {
   const [userData, setUserData] = useState(null);
@@ -18,7 +19,7 @@ function Profile() {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserData(userDoc.data());
-          setFormData(userDoc.data()); // initialize form data
+          setFormData(userDoc.data()); 
         }
       } else {
         setUserData(null);
@@ -42,19 +43,20 @@ function Profile() {
   const handleEditSave = async (e) => {
     e.preventDefault();
     if (editMode) {
-      // Save updated data to Firestore
       const user = auth.currentUser;
       if (user) {
         await setDoc(doc(db, "users", user.uid), formData);
         setUserData(formData);
         setEditMode(false);
+        toast.success("Profile updated successfully");
       }
     } else {
-      setEditMode(true); // Enter edit mode
+      setEditMode(true); 
     }
   };
 
   return (
+    <>
     <div className="profile-screen">
       <div className="profile-container">
         <h1>{editMode ? "Edit Profile" : "Profile"}</h1>
@@ -112,6 +114,15 @@ function Profile() {
         </form>
       </div>
     </div>
+
+    <Toaster
+      position="top-right"
+      reverseOrder={false}
+      toastOptions={{
+        duration: 2000,
+      }}
+    />
+    </>
   );
 }
 

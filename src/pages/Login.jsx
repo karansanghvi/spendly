@@ -3,6 +3,7 @@ import "../assets/styles/login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
+import toast, { Toaster } from "react-hot-toast";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -14,9 +15,10 @@ function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      toast.success("Logged In Successfully");
+      navigate("/dashboard");
     } catch (error) {
-      alert("❌ User not found or incorrect credentials.");
+      toast.error("User not found. Kindly signup")
       console.log("User not found", error);
       setEmail("");
       setPassword("");
@@ -32,13 +34,13 @@ function Login() {
           <div className="input-box">
             <label htmlFor="emailAddress">Email Address:</label>
             <input type="email" id="emailAddress" placeholder="john.doe@gmail.com"
-              value={email} onChange={(e) => setEmail(e.target.value)} required />
+              value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
           </div>
 
           <div className="input-box">
             <label htmlFor="password">Password:</label>
             <input type="password" id="password" placeholder="Password"
-              value={password} onChange={(e) => setPassword(e.target.value)} required />
+              value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
           </div>
 
           <button type="submit" className="login-btn">Login</button>
@@ -48,6 +50,14 @@ function Login() {
       </div>
     </div>
     <br/> <br/>
+
+    <Toaster 
+      position="top-right"
+      reverseOrder={false}
+      toastOptions={{
+        duration: 2000,
+      }}
+    />
     </>
   );
 }
