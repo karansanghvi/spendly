@@ -3,6 +3,7 @@ import "../assets/styles/profile.css";
 import { auth, db } from "../../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
+import Footer from "./../components/Footer";
 
 function Profile() {
   const [userData, setUserData] = useState(null);
