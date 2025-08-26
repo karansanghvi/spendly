@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
+import Footer from "../components/Footer";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -49,7 +50,8 @@ function Login() {
         </form>
       </div>
     </div>
-    <br/> <br/>
+
+    <Footer />
 
     <Toaster 
       position="top-right"

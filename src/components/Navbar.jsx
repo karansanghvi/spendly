@@ -153,7 +153,7 @@ function Navbar() {
             </Link>
             <Link 
               to="/invite" 
-              className="text-xl font-semibold text-gray-800 hover:text-blue-500 transition"
+              className="block text-lg font-semibold text-gray-800 hover:text-blue-500 transition"
               onClick={() => setIsOpen(false)}
             >
                 Collaborate

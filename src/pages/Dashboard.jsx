@@ -6,6 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   BarChart, Bar,
 } from 'recharts';
+import Footer from '../components/Footer';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFE', '#FF6B6B'];
 
@@ -80,6 +81,7 @@ function Dashboard() {
   const top5Expenses = [...expenses].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount)).slice(0, 5);
 
   return (
+    <>
     <div className="px-4 md:px-10 space-y-6 w-full mb-20">
       {fullName && <h1 className="text-3xl font-bold text-black">👋 Hello, {fullName}!</h1>}
 
@@ -185,6 +187,9 @@ function Dashboard() {
         </div>
       </div>
     </div>
+
+    <Footer />
+    </>
   );
 }
 

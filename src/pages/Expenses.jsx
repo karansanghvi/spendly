@@ -4,6 +4,7 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot, query, Timestamp, updat
 import { Edit, Trash2 } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import * as XLSX from "xlsx";
+import Footer from "./../components/Footer";
 
 function Expenses() {
   const [isOpen, setIsOpen] = useState(false);
@@ -211,7 +212,7 @@ function Expenses() {
 
   return (
     <>
-      <div className='px-4 md:px-10 pt-20'>
+      <div className='px-4 md:px-10 mb-20'>
         {/* Header */}
         <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-6 w-full'>
           <div className='flex flex-col'>
@@ -394,12 +395,14 @@ function Expenses() {
             </div>
           </div>
         </div>
+
+        <Footer />
       </div>
 
       {/* Modal For Adding Expense */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white border border-gray-300 rounded-2xl shadow-2xl w-full max-w-md max-h-[600px] p-6 relative text-gray-800 overflow-y-auto mb-10">
+          <div className="bg-white border border-gray-300 rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-100px)] p-6 relative text-gray-800 overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">{editingExpense ? "Edit Expense" : "Add Expense"}</h2>
 
             <form onSubmit={handleSubmitExpense} className="space-y-4">

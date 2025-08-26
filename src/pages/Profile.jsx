@@ -115,6 +115,8 @@ function Profile() {
       </div>
     </div>
 
+    <Footer />
+
     <Toaster
       position="top-right"
       reverseOrder={false}

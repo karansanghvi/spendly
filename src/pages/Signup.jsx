@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import toast, { Toaster } from "react-hot-toast";
+import Footer from "../components/Footer";
 
 function Signup() {
   const [fullName, setFullName] = useState("");
@@ -78,6 +79,8 @@ function Signup() {
       </div>
     </div>
     <br/> <br/>
+
+    <Footer />
 
     <Toaster
       position="top-right"

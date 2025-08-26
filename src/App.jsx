@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from
 import { onAuthStateChanged } from "firebase/auth";
 
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Login from './pages/Login';
@@ -27,7 +26,6 @@ function Layout({ children }) {
       <main className={`min-h-screen ${!hideLayout ? "pt-20 px-4 md:px-10" : "px-6"}`}>
         {children}
       </main>
-      {!hideLayout && <Footer />}
     </>
   );
 }

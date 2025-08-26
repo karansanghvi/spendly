@@ -14,6 +14,7 @@ import {
 import { auth, db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import Footer from "../components/Footer";
 
 function Invite() {
   const [linkInput, setLinkInput] = useState("");
@@ -269,6 +270,8 @@ function Invite() {
             </div>
           </div>
         )}
+
+        <Footer />
       </div>
 
       <Toaster

@@ -8,6 +8,7 @@ import {
   BarChart, Bar,
 } from "recharts";
 import ExpensesTableWithPagination from "../components/ExpensesTableWithPagination";
+import Footer from "../components/Footer";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFE', '#FF6B6B'];
 
@@ -191,6 +192,8 @@ function SharedDashboard() {
           </table>
         </div>
       </div>
+
+      <Footer />
 
       {/* Modal for All Expenses */}
         {showModal && (
