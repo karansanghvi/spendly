@@ -24,6 +24,7 @@ function Expenses() {
   const [filterCategory, setFilterCategory] = useState("");
   const [filterDateRange, setFilterDateRange] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => {
@@ -132,12 +133,14 @@ function Expenses() {
 
     if (filterCurrency && expense.currency !== filterCurrency) return false;
     if (filterCategory && expense.category !== filterCategory) return false;
+
     if (filterDateRange) {
       const days = parseInt(filterDateRange);
       const pastDate = new Date();
       pastDate.setDate(now.getDate() - days);
       if (expenseDate < pastDate || expenseDate > now) return false;
     }
+
     if (filterDate) {
       const selectedDate = new Date(filterDate);
       if (
@@ -148,6 +151,13 @@ function Expenses() {
         return false;
       }
     }
+
+    if (filterMonth !== "") {
+      if (expenseDate.getMonth() !== parseInt(filterMonth)) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -181,6 +191,7 @@ function Expenses() {
     setFilterCategory("");
     setFilterDateRange("");
     setFilterDate("");
+    setFilterMonth("");
   };
 
   const exportToExcel = () => {
@@ -286,6 +297,26 @@ function Expenses() {
             onChange={(e) => setFilterDate(e.target.value)}
             className="bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+
+          <select
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+            className='bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400'
+          >
+            <option value="">All Months</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
 
           <button
             onClick={clearFilters}
