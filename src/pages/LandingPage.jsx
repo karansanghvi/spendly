@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/cashsync.png";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase";
 
 function LandingPage() {
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="flex items-center justify-center min-h-screen px-6">
       <div className="text-center">
@@ -16,12 +29,21 @@ function LandingPage() {
           Track expenses, manage budgets, and collaborate effortlessly with others.
         </p>
         <div className="flex justify-center">
-          <Link
-            to="/login"
-            className="bg-blue-500 text-white py-3 px-6 md:px-10 rounded-lg font-semibold text-2xl hover:bg-blue-600 mt-4 md:mt-0"
-          >
-            Get Started
-          </Link>
+          {user ? (
+            <Link
+              to="/dashboard"
+              className="bg-blue-500 text-white py-3 px-6 md:px-10 rounded-lg font-semibold text-2xl hover:bg-blue-600 mt-4 md:mt-0"
+            >
+              Go To Dashboard
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="bg-blue-500 text-white py-3 px-6 md:px-10 rounded-lg font-semibold text-2xl hover:bg-blue-600 mt-4 md:mt-0"
+            >
+              Get Started
+            </Link>
+          )}
         </div>
       </div>
     </div>

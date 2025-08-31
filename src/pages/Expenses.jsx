@@ -54,7 +54,7 @@ function Expenses() {
           title,
           amount: parseFloat(amount),
           currency,
-          date,
+          date: new Date(date + "T00:00:00").toISOString(),
           category: category === "others" ? otherCategory : category,
           notes,
         });
@@ -64,7 +64,7 @@ function Expenses() {
           title,
           amount: parseFloat(amount),
           currency,
-          date,
+          date: new Date(date + "T00:00:00").toISOString(), 
           category: category === "others" ? otherCategory : category,
           notes,
           createdAt: Timestamp.now(),
@@ -195,7 +195,7 @@ function Expenses() {
       Amount: exp.amount,
       Currency: exp.currency,
       Category: exp.category,
-      Date: new Date(exp.date).toLocaleDateString(),
+      Date: new Date(exp.date).toLocaleDateString("en-GB"),
       Notes: exp.notes || "-",
     }));
 
@@ -327,7 +327,9 @@ function Expenses() {
                         <td className="px-4 py-2 text-sm">{expense.title}</td>
                         <td className="px-4 py-2 text-sm">{expense.currency} {expense.amount}</td>
                         <td className="px-4 py-2 text-sm">{expense.category}</td>
-                        <td className="px-4 py-2 text-sm">{new Date(expense.date).toLocaleDateString()}</td>
+                        <td className="px-4 py-2 text-sm">
+                          {new Date(expense.date).toLocaleDateString("en-GB")}
+                        </td>
                         <td className="px-4 py-2 text-sm">{expense.notes || "-"}</td>
                         <td>
                           <div className="flex items-center space-x-2">
