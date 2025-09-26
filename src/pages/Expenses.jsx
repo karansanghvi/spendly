@@ -26,6 +26,11 @@ function Expenses() {
   const [filterDate, setFilterDate] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
 
+  // Filter Download Modal
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [downloadMonth, setDownloadMonth] = useState(""); 
+  const [downloadYear, setDownloadYear] = useState("");
+
   const openModal = () => setIsOpen(true);
   const closeModal = () => {
     setIsOpen(false);
@@ -163,7 +168,7 @@ function Expenses() {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 15;
 
   // Calculate paginated data
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -194,14 +199,54 @@ function Expenses() {
     setFilterMonth("");
   };
 
-  const exportToExcel = () => {
-    if (filteredExpenses.length === 0) {
-      alert("No expenses to export!");
+  // const exportToExcel = () => {
+  //   if (filteredExpenses.length === 0) {
+  //     alert("No expenses to export!");
+  //     return;
+  //   }
+
+  //   // Prepare data
+  //   const data = filteredExpenses.map((exp) => ({
+  //     Title: exp.title,
+  //     Amount: exp.amount,
+  //     Currency: exp.currency,
+  //     Category: exp.category,
+  //     Date: new Date(exp.date).toLocaleDateString("en-GB"),
+  //     Notes: exp.notes || "-",
+  //   }));
+
+  //   // Convert to worksheet
+  //   const worksheet = XLSX.utils.json_to_sheet(data);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+
+  //   // Generate excel file and trigger download
+  //   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  //   const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  //   saveAs(dataBlob, "expenses.xlsx");
+  // };
+  const handleExportWithMonthYear = () => {
+    if (!downloadMonth || !downloadYear) {
+      alert("Please select both month and year!");
+      return;
+    }
+
+    // Filter by month/year
+    const filtered = expenses.filter(exp => {
+      const d = new Date(exp.date);
+      return (
+        d.getMonth() === parseInt(downloadMonth) &&
+        d.getFullYear() === parseInt(downloadYear)
+      );
+    });
+
+    if (filtered.length === 0) {
+      alert("No expenses found for the selected month and year!");
       return;
     }
 
     // Prepare data
-    const data = filteredExpenses.map((exp) => ({
+    const data = filtered.map(exp => ({
       Title: exp.title,
       Amount: exp.amount,
       Currency: exp.currency,
@@ -215,10 +260,15 @@ function Expenses() {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
 
-    // Generate excel file and trigger download
+    // Generate file
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(dataBlob, "expenses.xlsx");
+    saveAs(dataBlob, `expenses_${downloadMonth}-${downloadYear}.xlsx`);
+
+    // Close modal
+    setIsDownloadModalOpen(false);
+    setDownloadMonth("");
+    setDownloadYear("");
   };
 
   return (
@@ -326,7 +376,7 @@ function Expenses() {
           </button>
 
           <button
-            onClick={exportToExcel}
+            onClick={() => setIsDownloadModalOpen(true)}
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-semibold"
           >
             Download Excel
@@ -334,7 +384,7 @@ function Expenses() {
         </div>
 
         {/* Expenses List */}
-        <div className="overflow-x-auto mt-6">
+        <div className="mt-6">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden rounded-2xl shadow-lg bg-white border border-gray-300">
               <table className="min-w-full divide-y divide-gray-200">
@@ -392,7 +442,7 @@ function Expenses() {
               </table>
 
               {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-4">
+                <div className="flex justify-center items-center space-x-2 mt-4 mb-4">
                   <button
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -426,6 +476,8 @@ function Expenses() {
               )}
 
             </div>
+
+            <br /> <br/>
           </div>
         </div>
 
@@ -585,6 +637,66 @@ function Expenses() {
                 onClick={handleDeleteExpense}
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Download Excel */}
+      {isDownloadModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white border border-gray-300 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative text-gray-800">
+            <h2 className="text-2xl font-bold mb-4">Download Expenses</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-1 font-semibold">Select Month:</label>
+                <select
+                  value={downloadMonth}
+                  onChange={(e) => setDownloadMonth(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800"
+                >
+                  <option value="">-- Select Month --</option>
+                  <option value="0">January</option>
+                  <option value="1">February</option>
+                  <option value="2">March</option>
+                  <option value="3">April</option>
+                  <option value="4">May</option>
+                  <option value="5">June</option>
+                  <option value="6">July</option>
+                  <option value="7">August</option>
+                  <option value="8">September</option>
+                  <option value="9">October</option>
+                  <option value="10">November</option>
+                  <option value="11">December</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold">Enter Year:</label>
+                <input
+                  type="number"
+                  value={downloadYear}
+                  onChange={(e) => setDownloadYear(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800"
+                  placeholder="e.g. 2025"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                className="px-4 py-2 rounded bg-gray-200 border border-gray-300 text-gray-800 hover:bg-gray-300"
+                onClick={() => setIsDownloadModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
+                onClick={handleExportWithMonthYear}
+              >
+                Download
               </button>
             </div>
           </div>
