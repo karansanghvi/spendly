@@ -199,32 +199,6 @@ function Expenses() {
     setFilterMonth("");
   };
 
-  // const exportToExcel = () => {
-  //   if (filteredExpenses.length === 0) {
-  //     alert("No expenses to export!");
-  //     return;
-  //   }
-
-  //   // Prepare data
-  //   const data = filteredExpenses.map((exp) => ({
-  //     Title: exp.title,
-  //     Amount: exp.amount,
-  //     Currency: exp.currency,
-  //     Category: exp.category,
-  //     Date: new Date(exp.date).toLocaleDateString("en-GB"),
-  //     Notes: exp.notes || "-",
-  //   }));
-
-  //   // Convert to worksheet
-  //   const worksheet = XLSX.utils.json_to_sheet(data);
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
-
-  //   // Generate excel file and trigger download
-  //   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  //   const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
-  //   saveAs(dataBlob, "expenses.xlsx");
-  // };
   const handleExportWithMonthYear = () => {
     if (!downloadMonth || !downloadYear) {
       alert("Please select both month and year!");
@@ -254,6 +228,42 @@ function Expenses() {
       Date: new Date(exp.date).toLocaleDateString("en-GB"),
       Notes: exp.notes || "-",
     }));
+
+    // Calculate totals by currency
+    const totalINR = filtered
+      .filter(e => e.currency === "₹")
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+
+    const totalUSD = filtered
+      .filter(e => e.currency === "$")
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+
+    // Add a blank row + totals summary row
+    data.push({});
+    data.push({
+      Title: "Total Spent (Summary)",
+      Amount: "",
+      Currency: "",
+      Category: "",
+      Date: "",
+      Notes: "",
+    });
+    data.push({
+      Title: "Total in USD ($)",
+      Amount: totalUSD.toFixed(2),
+      Currency: "$",
+      Category: "",
+      Date: "",
+      Notes: "",
+    });
+    data.push({
+      Title: "Total in INR (₹)",
+      Amount: totalINR.toFixed(2),
+      Currency: "₹",
+      Category: "",
+      Date: "",
+      Notes: "",
+    });
 
     // Convert to worksheet
     const worksheet = XLSX.utils.json_to_sheet(data);
