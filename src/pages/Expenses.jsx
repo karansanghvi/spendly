@@ -25,6 +25,7 @@ function Expenses() {
   const [filterDateRange, setFilterDateRange] = useState("");
   const [filterDate, setFilterDate] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
 
   // Filter Download Modal
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -158,9 +159,11 @@ function Expenses() {
     }
 
     if (filterMonth !== "") {
-      if (expenseDate.getMonth() !== parseInt(filterMonth)) {
-        return false;
-      }
+      if (expenseDate.getMonth() !== parseInt(filterMonth)) return false;
+    }
+
+    if (filterYear !== "") {
+      if (expenseDate.getFullYear() !== parseInt(filterYear)) return false;
     }
 
     return true;
@@ -197,6 +200,7 @@ function Expenses() {
     setFilterDateRange("");
     setFilterDate("");
     setFilterMonth("");
+    setFilterYear("");
   };
 
   const handleExportWithMonthYear = () => {
@@ -302,7 +306,7 @@ function Expenses() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-start space-y-2 md:space-y-0 md:space-x-4 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-start flex-wrap gap-2 mb-4">
           <select
             value={filterCurrency}
             onChange={(e) => setFilterCurrency(e.target.value)}
@@ -377,6 +381,16 @@ function Expenses() {
             <option value="10">November</option>
             <option value="11">December</option>
           </select>
+
+          <input
+            type="number"
+            value={filterYear}
+            onChange={(e) => setFilterYear(e.target.value)}
+            className="bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 w-28"
+            placeholder="Year"
+            min="2000"
+            max="2100"
+          />
 
           <button
             onClick={clearFilters}
